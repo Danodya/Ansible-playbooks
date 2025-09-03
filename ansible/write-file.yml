@@ -1,10 +1,10 @@
 ---
 - name: Write a simple file
-  hosts: Dano-Linux
+  hosts: aws_instances
   gather_facts: false
   tasks:
     - name: write file test.txt to temp file
       ansible.builtin.lineinfile:
-        path: /temp/test.txt
+        path: /tmp/test.txt
         line: just a quick and simple test
         create: true
