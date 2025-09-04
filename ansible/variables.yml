@@ -10,7 +10,7 @@
   tasks:
     - name: Add users to the linux host
       ansible.builtin.user:
-        # name: "{{new_user}}"
+        # name: "{{new_user}}" # can provide the variables in CLI, using -e after inventory
         state: present
       become: true
       # vars:
