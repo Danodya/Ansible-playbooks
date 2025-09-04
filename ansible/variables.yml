@@ -3,14 +3,14 @@
   hosts: aws_instances
   gather_facts: false
   vars_files:
-    - file/users.yml
+    - files/users.yml
   vars:
     # new_user: test1
 
   tasks:
     - name: Add users to the linux host
       ansible.builtin.user:
-        # name: "{{new_user}}" # can provide the variables in CLI, using -e after inventory
+        name: "{{new_user}}" # can provide the variables in CLI, using -e after inventory
         state: present
       become: true
       # vars:
