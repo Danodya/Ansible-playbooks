@@ -1,0 +1,33 @@
+---
+- name: Add nginx webserver to a linux host
+  hosts: aws_instances
+  # gather_facts: false
+  become: true
+  vars:
+
+  tasks:
+    - name: Block for linux hosts
+      when: "'Amazon' in ansible_facts['distribution']" # checking if host reports as Linux
+      block:
+        - name: Install nginx webserver
+          ansible.builtin.dnf:
+            name: nginx
+            state: present
+        - name: Start and enable nginx service
+          ansible.builtin.systemd: #systemd module to both start the service as well as enable it to start on boot
+            name: nginx
+            enabled: yes
+            state: started
+
+    - name: Block for Ubuntu hosts
+      when: "'Ubuntu' in ansible_facts['distribution']" # checking if host reports as Linux
+      block:
+        - name: Install nginx webserver
+          ansible.builtin.apt:
+            name: nginx
+            state: present
+        - name: Start and enable nginx service
+          ansible.builtin.systemd: #systemd module to both start the service as well as enable it to start on boot
+            name: nginx
+            enabled: yes
+            state: started
