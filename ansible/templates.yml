@@ -50,17 +50,23 @@
         group: nginx
         mode: '0644'
 
-    - name: Add nginx config based on template
-      ansible.builtin.template:
-        src: templates/nginx.conf.j2
-        dest: /etc/nginx/nginx.conf
-        owner: nginx
-        group: nginx
-        mode: '0644'
-      register: nginx_config # saves the task output to nginx_config variable
+    # - name: Add nginx config based on template
+    #   ansible.builtin.template:
+    #     src: templates/nginx.conf.j2
+    #     dest: /etc/nginx/nginx.conf
+    #     owner: nginx
+    #     group: nginx
+    #     mode: '0644'
+    #   register: nginx_config # saves the task output to nginx_config variable
+
+    - name: Use existing nginx config on remote host
+      ansible.builtin.copy:
+        src: /etc/nginx/nginx.conf
+        dest: /etc/nginx/nginx.conf.backup
+        remote_src: true
 
     - name: Restart nginx service when nginx config changes # use service module to restart the server only when the config file is changed
-      when: nginx.config.chnaged
+      when: nginx.config.changed
       ansible.builtin.service:
         name: nginx
         state: restarted
