@@ -1,0 +1,66 @@
+---
+- name: Add nginx webserver to a linux host
+  hosts: aws_instances
+  # gather_facts: false
+  become: true
+  vars:
+    owner_name: Dano
+    web_path: /home/webserver
+
+  tasks:
+    - name: Block for linux hosts
+      when: "'Amazon' in ansible_facts['distribution']" # checking if host reports as Linux
+      block:
+        - name: Install nginx webserver
+          ansible.builtin.dnf:
+            name: nginx
+            state: present
+        - name: Start and enable nginx service
+          ansible.builtin.systemd: #systemd module to both start the service as well as enable it to start on boot
+            name: nginx
+            enabled: yes
+            state: started
+
+    - name: Block for Ubuntu hosts
+      when: "'Ubuntu' in ansible_facts['distribution']" # checking if host reports as Linux
+      block:
+        - name: Install nginx webserver
+          ansible.builtin.apt:
+            name: nginx
+            state: present
+        - name: Start and enable nginx service
+          ansible.builtin.systemd: #systemd module to both start the service as well as enable it to start on boot
+            name: nginx
+            enabled: yes
+            state: started
+    
+    - name: create /home/webserver directory # create a directory to store the web files
+      ansible.builtin.file:
+        path: "{{web_path}}"
+        state: directory
+        owner: nginx
+        group: nginx
+        mode: '0755'
+
+    - name: Add index.html to webserver directory # template module to built and install the index.html file
+      ansible.builtin.template:
+        src: templates/index.html.j2 # where the file lives on the ansible server
+        dest: "{{web_path}}/index.html" # specifying the remote server where the file will be placed. using web path variable for repeatability
+        owner: nginx
+        group: nginx
+        mode: '0644'
+
+    - name: Add nginx config based on template
+      ansible.builtin.template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: nginx
+        group: nginx
+        mode: '0644'
+      register: nginx_config # saves the task output to nginx_config variable
+
+    - name: Restart nginx service when nginx config changes # use service module to restart the server only when the config file is changed
+      when: nginx.config.chnaged
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
