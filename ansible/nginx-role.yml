@@ -1,0 +1,14 @@
+---
+- name: Add/configure nginx webserve on a Amazon linux host via roles
+  hosts: aws_instances
+  # gather_facts: facts
+  become: true
+  vars:
+
+  # roles:
+  #   - nginx
+
+  tasks:
+    - name: Run nginx roles
+      include_role:
+        name: nginx
