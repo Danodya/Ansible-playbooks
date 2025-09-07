@@ -1,0 +1,9 @@
+---
+- name: Add users to the linux host using loop
+  hosts: aws_instances
+  # gather_facts: false
+
+  tasks:
+    - name: Run add_users roles
+      include_role:
+        name: add_users
