@@ -1,0 +1,20 @@
+---
+- name: Check RAM on a Amazon Linux host
+  hosts: aws_instances
+  # gather_facts: false
+  vars:
+
+  tasks:
+    - name: Display ansible_memtotal_mb
+      ansible.builtin.debug:
+        var: ansible_memtotal_mb
+
+    - name: Assert if RAM is at least 900MB
+      ansible.builtin.assert:
+        that: ansible_memtotal_mb > 900
+        msg: RAM is less than 900MB
+
+    - name: Assert if RAM is at least 10GB
+      ansible.builtin.assert:
+        that: ansible_memtotal_mb > 10000
+        msg: RAM is less than 10GB
