@@ -64,8 +64,11 @@
         src: /etc/nginx/nginx.conf
         dest: /etc/nginx/nginx.conf.backup
         remote_src: true
+      register: nginx_config
+      notify: restart nginx
 
-    - name: Restart nginx service when nginx config changes # use service module to restart the server only when the config file is changed
+  handlers:
+    - name: Restart nginx
       when: nginx_config.changed
       ansible.builtin.service:
         name: nginx
