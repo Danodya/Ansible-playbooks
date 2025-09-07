@@ -1,0 +1,12 @@
+---
+- name: Challenge 2
+  hosts: aws_instances
+  gather_facts: false
+  become: true
+  vars_files:
+    - files/my_secret.yml #encrypted file
+
+  tasks:
+    - name: Display the launch variable
+      ansible.builtin.debug:
+        var: launch
